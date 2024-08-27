@@ -22,9 +22,9 @@ jobs:
 
     - name: Find and build with Maven
       run: |
-        POM_PATH=$(find /root /tmp /mvn -name "pom.xml" | head -n 1)
+        POM_PATH=$(find /tmp/mvn -name "pom.xml" | head -n 1)
         if [ -z "$POM_PATH" ]; then
-          echo "POM file not found in /root, /tmp, or /mvn directories."
+          echo "POM file not found in /tmp/mvn directory."
           exit 1
         else
           echo "Found POM file at: $POM_PATH"
@@ -33,9 +33,9 @@ jobs:
 
     - name: SonarQube Scan
       run: |
-        POM_PATH=$(find /root /tmp /mvn -name "pom.xml" | head -n 1)
+        POM_PATH=$(find /tmp/mvn -name "pom.xml" | head -n 1)
         if [ -z "$POM_PATH" ]; then
-          echo "POM file not found in /root, /tmp, or /mvn directories."
+          echo "POM file not found in /tmp/mvn directory."
           exit 1
         else
           echo "Found POM file at: $POM_PATH"
@@ -47,11 +47,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-    - name: List root, tmp, and mvn directories (for troubleshooting)
+    - name: List tmp/mvn directory (for troubleshooting)
       run: |
-        echo "Listing /root:"
-        ls -R /root || echo "Cannot access /root"
-        echo "Listing /tmp:"
-        ls -R /tmp || echo "Cannot access /tmp"
-        echo "Listing /mvn:"
-        ls -R /mvn || echo "Cannot access /mvn"
+        echo "Listing /tmp/mvn:"
+        ls -R /tmp/mvn || echo "Cannot access /tmp/mvn"
