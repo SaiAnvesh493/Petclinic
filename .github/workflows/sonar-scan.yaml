@@ -38,4 +38,4 @@ jobs:
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
     - name: List root directory (for troubleshooting)
-      run: ls -R /
+      run: ls -R / 
