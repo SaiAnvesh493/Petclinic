@@ -24,7 +24,7 @@ jobs:
         java-version: '17'
 
     - name: Build with Maven (absolute path)
-      run: mvn clean install -f /tmp/mvn/Petclinic/pom.xml
+      run: mvn clean install /tmp/mvn/Petclinic
 
     - name: SonarQube Scan
       uses: sonarsource/sonarqube-scan-action@master
