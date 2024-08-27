@@ -14,28 +14,44 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: List files in current directory
-      run: ls -R .
-
     - name: Set up JDK 17
       uses: actions/setup-java@v2
       with:
         distribution: 'adopt'
         java-version: '17'
 
-    - name: Build with Maven (relative path)
-      run: mvn clean install -f ./mvn/Petclinic
+    - name: Find and build with Maven
+      run: |
+        POM_PATH=$(find /root /tmp /mvn -name "pom.xml" | head -n 1)
+        if [ -z "$POM_PATH" ]; then
+          echo "POM file not found in /root, /tmp, or /mvn directories."
+          exit 1
+        else
+          echo "Found POM file at: $POM_PATH"
+          mvn clean install -f "$POM_PATH"
+        fi
 
     - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@master
-      with:
-        projectBaseDir: ./mvn/Petclinic
-        args: >
-          -Dsonar.organization=my-org
-          -Dsonar.projectKey=petclinic
+      run: |
+        POM_PATH=$(find /root /tmp /mvn -name "pom.xml" | head -n 1)
+        if [ -z "$POM_PATH" ]; then
+          echo "POM file not found in /root, /tmp, or /mvn directories."
+          exit 1
+        else
+          echo "Found POM file at: $POM_PATH"
+          mvn sonar:sonar -f "$POM_PATH" \
+            -Dsonar.organization=my-org \
+            -Dsonar.projectKey=petclinic
+        fi
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-    - name: List root directory (for troubleshooting)
-      run: ls -R /
+    - name: List root, tmp, and mvn directories (for troubleshooting)
+      run: |
+        echo "Listing /root:"
+        ls -R /root || echo "Cannot access /root"
+        echo "Listing /tmp:"
+        ls -R /tmp || echo "Cannot access /tmp"
+        echo "Listing /mvn:"
+        ls -R /mvn || echo "Cannot access /mvn"
