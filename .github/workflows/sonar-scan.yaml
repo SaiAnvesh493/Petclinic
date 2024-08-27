@@ -16,14 +16,14 @@ jobs:
         distribution: 'adopt'
         java-version: '17'
     - name: Build with Maven
-      run: mvn clean install -f mvn/Petclinic/pom.xml
+      run: mvn clean install -f root/mvn/Petclinic/bin/pom.xml
     - name: SonarQube Scan
       uses: sonarsource/sonarqube-scan-action@master
       with:
         projectBaseDir: .
         args: >
           -Dsonar.organization=my-org
-          -Dsonar.projectKey=Spring Framework Petclinic
+          -Dsonar.projectKey=petclinic
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
