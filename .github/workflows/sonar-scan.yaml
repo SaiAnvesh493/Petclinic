@@ -14,6 +14,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: List files in /tmp
+      run: ls -R /tmp
+
     - name: Set up JDK 17
       uses: actions/setup-java@v2
       with:
@@ -21,15 +24,4 @@ jobs:
         java-version: '17'
 
     - name: Build with Maven
-      run: mvn clean install -f /tmp/mvn/Petclinic/pom.xml
-
-    - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@master
-      with:
-        projectBaseDir: /tmp/mvn/Petclinic
-        args: >
-          -Dsonar.organization=my-org
-          -Dsonar.projectKey=petclinic
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      run: mvn -X clean install -f /tmp/mvn/Petclinic/pom.xml
