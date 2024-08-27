@@ -20,34 +20,49 @@ jobs:
         distribution: 'adopt'
         java-version: '17'
 
+    - name: List /tmp directory (for debugging)
+      run: |
+        echo "Listing /tmp directory:"
+        ls -R /tmp || echo "Cannot access /tmp"
+
     - name: Find and build with Maven
       run: |
-        POM_PATH=$(find /tmp/mvn -name "pom.xml" | head -n 1)
-        if [ -z "$POM_PATH" ]; then
-          echo "POM file not found in /tmp/mvn directory."
-          exit 1
+        if [ -d "/tmp/mvn" ]; then
+          POM_PATH=$(find /tmp/mvn -name "pom.xml" | head -n 1)
+          if [ -z "$POM_PATH" ]; then
+            echo "POM file not found in /tmp/mvn directory."
+            exit 1
+          else
+            echo "Found POM file at: $POM_PATH"
+            mvn clean install -f "$POM_PATH"
+          fi
         else
-          echo "Found POM file at: $POM_PATH"
-          mvn clean install -f "$POM_PATH"
+          echo "/tmp/mvn directory does not exist."
+          exit 1
         fi
 
     - name: SonarQube Scan
       run: |
-        POM_PATH=$(find /tmp/mvn -name "pom.xml" | head -n 1)
-        if [ -z "$POM_PATH" ]; then
-          echo "POM file not found in /tmp/mvn directory."
-          exit 1
+        if [ -d "/tmp/mvn" ]; then
+          POM_PATH=$(find /tmp/mvn -name "pom.xml" | head -n 1)
+          if [ -z "$POM_PATH" ]; then
+            echo "POM file not found in /tmp/mvn directory."
+            exit 1
+          else
+            echo "Found POM file at: $POM_PATH"
+            mvn sonar:sonar -f "$POM_PATH" \
+              -Dsonar.organization=my-org \
+              -Dsonar.projectKey=petclinic
+          fi
         else
-          echo "Found POM file at: $POM_PATH"
-          mvn sonar:sonar -f "$POM_PATH" \
-            -Dsonar.organization=my-org \
-            -Dsonar.projectKey=petclinic
+          echo "/tmp/mvn directory does not exist."
+          exit 1
         fi
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-    - name: List tmp/mvn directory (for troubleshooting)
+    - name: List directory structure (for debugging)
       run: |
-        echo "Listing /tmp/mvn:"
-        ls -R /tmp/mvn || echo "Cannot access /tmp/mvn"
+        echo "Listing the root directory:"
+        ls -R / || echo "Cannot access root directory"
